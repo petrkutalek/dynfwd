@@ -1,4 +1,4 @@
-name: CI
+name: CodeQL
 
 on:
   push:
@@ -9,22 +9,27 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build x86_64
+  analyze:
+    name: Analyze
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'cpp' ]
     steps:
       - name: Install prerequisites
         run: |
           sudo apt-get update
           sudo apt-get install libipset-dev libzmq3-dev libmsgpack-dev
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
       - name: Make
         run: |
           make
         working-directory: src
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: dynfwd
-          path: src/dynfwd
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
