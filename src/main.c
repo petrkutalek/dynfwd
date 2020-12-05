@@ -91,8 +91,10 @@ void process_list(const void *data, size_t data_size)
                 break;
             }
 
+            fprintf(stdout, "<7>Start update in transaction\n");
             struct ipset_session *session = ipset_session(ipset);
 
+            fprintf(stdout, "<7>Create dynfw4_tmp list\n");
             ipset_parse_line(ipset, "create dynfw4_tmp hash:ip -exist");
             for (unsigned int j = 0; j != p_list->val.via.array.size; ++j) {
                 msgpack_object *p_ip = p_list->val.via.array.ptr + j;
@@ -106,13 +108,17 @@ void process_list(const void *data, size_t data_size)
                     continue;
                 }
 
+                fprintf(stdout, "<7>Add %s\n", v_ip);
                 char line[64] = { 0 };
                 memset(line, 0, 64);
                 snprintf(line, 64, "add dynfw4_tmp %s -exist", v_ip);
                 ipset_parse_line(ipset, line);
             }
+            fprintf(stdout, "<7>Swap content of dynfw4_tmp and dynfw4 lists\n");
             ipset_parse_line(ipset, "swap dynfw4_tmp dynfw4");
+            fprintf(stdout, "<7>Destroy dynfw4_tmp\n");
             ipset_parse_line(ipset, "destroy dynfw4_tmp");
+            fprintf(stdout, "<7>Commit transaction\n");
             ipset_commit(session);
         } while (false);
     }
@@ -174,13 +180,13 @@ void process_delta(const void *data, size_t data_size)
                 break;
             }
 
+            fprintf(stdout, "<7>%s %s\n", (strcmp(v_delta, "positive") == 0) ? "Add" : "Remove", v_ip);
             char line[64] = { 0 };
             memset(line, 0, 64);
             snprintf(line, 64, "%s dynfw4 %s -exist", (strcmp(v_delta, "positive") == 0) ? "add" : "del", v_ip);
             if (ipset_parse_line(ipset, line) < 0) {
                 fprintf(stderr, "<3>Could not execute ipset statement '%s'\n", line);
             }
-            //fprintf(stdout, "<7>%s %s\n", (strcmp(v_delta, "positive") == 0) ? "+" : "-", v_ip);
         } while (false);
     }
     msgpack_unpacked_destroy(&unpacked);
@@ -239,11 +245,9 @@ int main(int argc, char *argv[])
         goto fail;
     }
 
-/*
     int major, minor, patch;
     zmq_version(&major, &minor, &patch);
-    fprintf(stderr, "current 0MQ version is %d.%d.%d\n", major, minor, patch);
-*/
+    fprintf(stderr, "<6>Current 0MQ version is %d.%d.%d\n", major, minor, patch);
 
     void *context = zmq_ctx_new();
     void *subscriber = zmq_socket(context, ZMQ_SUB);
@@ -256,9 +260,9 @@ int main(int argc, char *argv[])
     zmq_setsockopt(subscriber, ZMQ_CURVE_SERVERKEY, server_public_key, 40);
     zmq_setsockopt(subscriber, ZMQ_CURVE_PUBLICKEY, client_public_key, 40);
     zmq_setsockopt(subscriber, ZMQ_CURVE_SECRETKEY, client_secret_key, 40);
-    fprintf(stderr, "<6>server pub key = %s\n", server_public_key);
-    fprintf(stderr, "<6>client pub key = %s\n", client_public_key);
-    fprintf(stderr, "<6>client sec key = %s\n", client_secret_key);
+    fprintf(stderr, "<6>Server pub key = %s\n", server_public_key);
+    fprintf(stderr, "<6>Client pub key = %s\n", client_public_key);
+    fprintf(stderr, "<6>Client sec key = %s\n", client_secret_key);
 
     zmq_connect(subscriber, "tcp://sentinel.turris.cz:7087");
 
