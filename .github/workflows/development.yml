@@ -1,0 +1,28 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    name: Build x86_64
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install libipset-dev libzmq3-dev libmsgpack-dev
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Make
+        run: |
+          make
+        working-directory: src
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dynfwd
+          path: src/dynfwd

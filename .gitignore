@@ -1,0 +1,6 @@
+.vscode
+
+# C lang
+*.o
+*.a
+*.d

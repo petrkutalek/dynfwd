@@ -1,0 +1,21 @@
+[Unit]
+Description=Dynamic Firewall Client Daemon
+Documentation=man:dynfwd(1) https://github.com/petrkutalek/dynfwd
+Requires=network-online.target ipset.service
+After=network-online.target ipset.service
+
+[Service]
+Type=simple
+DynamicUser=true
+ExecStart=/usr/bin/dynfwd
+ExecReload=/usr/bin/kill -s SIGUSR1 $MAINPID
+Restart=on-failure
+RestartSec=12
+AmbientCapabilities=CAP_NET_ADMIN
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
