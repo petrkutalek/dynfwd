@@ -57,15 +57,17 @@ dynfw-proxy: proxy.o
 
 install : all
 	install -m755 -Z -D -s -t $(DESTDIR)/bin/ dynfwd
-	setcap cap_net_admin+ep $(DESTDIR)/bin/dynfwd
+	#sudo setcap cap_net_admin+ep $(DESTDIR)/bin/dynfwd
 	install -m644 -Z -D -t $(DESTDIR)/lib/systemd/system/ ../install/dynfwd.service
+	install -m644 -Z -D -t $(DESTDIR)/share/doc/dynfwd/ ../README.md
+	install -m644 -Z -D -t $(DESTDIR)/share/licenses/dynfwd/ ../LICENSE
 	#install -m644 -Z -D -t $(DESTDIR)/share/man/man1/ dynfwd.1.gz
 	#install -m644 -Z -D -t $(DESTDIR)/share/bash-completion/completions/ dynfwd.complete
-	#install -m644 -Z -D -t $(DESTDIR)/share/doc/dynfwd/ README.md LICENSE
 
 uninstall :
 	rm -f $(DESTDIR)/bin/dynfwd
 	rm -f $(DESTDIR)/lib/systemd/system/dynfwd.service
+	rm -fr $(DESTDIR)/share/doc/dynfwd
+	rm -fr $(DESTDIR)/share/licenses/dynfwd
 	#rm -f $(DESTDIR)/share/man/man1/dynfwd.1.gz
 	#rm -f $(DESTDIR)/share/bash-completion/completions/dynfwd.complete
-	#rm -fr $(DESTDIR)/share/doc/dynfwd
