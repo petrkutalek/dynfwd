@@ -14,16 +14,16 @@ RestartSec=12
 AmbientCapabilities=CAP_NET_ADMIN
 
 ; sandboxing https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing
-ProtectHome=true
-PrivateDevices=true
-PrivateUsers=true
-ProtectKernelTunables=true
-ProtectKernelModules=true
-ProtectKernelLogs=true
+;ProtectHome=true
+;PrivateDevices=true
+;PrivateUsers=true
+;ProtectKernelTunables=true
+;ProtectKernelModules=true
+;ProtectKernelLogs=true
 ;ProtectControlGroups=true
 ;RestrictAddressFamilies=AF_INET AF_INET6
-MemoryDenyWriteExecute=true
-SystemCallArchitectures=native
+;MemoryDenyWriteExecute=true
+;SystemCallArchitectures=native
 
 [Install]
 WantedBy=multi-user.target
